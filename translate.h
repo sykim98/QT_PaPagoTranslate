@@ -3,6 +3,14 @@
 
 #include <QMainWindow>
 #include <QNetworkAccessManager>
+#include <QString>
+#include <Qurl>
+#include <QUrlQuery>
+#include <QNetworkReply>
+#include <QJsonObject>
+#include <QFile>
+#include <QJsonDocument>
+#include <QTextEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Translate; }
@@ -18,13 +26,19 @@ public:
 
 public:
     void Init();
-
+    QByteArray transOutput;
+    QString transResult;
 private slots:
     void on_TrButton_clicked();
     void replyFinished(QNetworkReply* reply);
+    //void changedText();
+
+    //void on_TransText_textChanged();
 
 private:
     Ui::Translate *ui;
-
+    QNetworkAccessManager* manager;
+    QNetworkRequest request;
+    //QString transOutput;
 };
 #endif // TRANSLATE_H
