@@ -34,6 +34,10 @@ private slots:
     //void changedText();
 
     //void on_TransText_textChanged();
+    void on_TransText_textChanged();
+
+signals:
+    void finished(QNetworkReply* reply);
 
 private:
     Ui::Translate *ui;

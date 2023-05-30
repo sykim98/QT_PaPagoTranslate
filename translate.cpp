@@ -8,8 +8,11 @@ Translate::Translate(QWidget *parent)
     , ui(new Ui::Translate)
     , manager(new QNetworkAccessManager(this))
     , request((QUrl)"https://openapi.naver.com/v1/papago/n2mt")
+    , transResult()
+
 {
     ui->setupUi(this);
+    connect(ui->TransText, SIGNAL(textChanged()), this, SLOT(on_TransText_textChanged()));
 }
 
 Translate::~Translate()
@@ -21,8 +24,10 @@ Translate::~Translate()
 void Translate::Init()
 {
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader("X-Naver-Client-Id", "YOUR ClientId");
-    request.setRawHeader("X-Naver-Client-Secret", "YOUR ClientSecret");
+    request.setRawHeader("X-Naver-Client-Id", "yoiexLp1rXgF6VFt5BQq");
+    request.setRawHeader("X-Naver-Client-Secret", "E41Lj1N0V_");
+
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply* )));
 }
 
 
@@ -44,6 +49,7 @@ void Translate::replyFinished(QNetworkReply* reply)
         QJsonValue val = obj3.value("translatedText");
 
         transResult = val.toString();
+        ui->TransText->setPlainText(transResult);
     }
     qDebug() << transResult;
 }
@@ -55,18 +61,12 @@ void Translate::on_TrButton_clicked()
     QString prevText = ui->PrevText->toPlainText();
     QString strequest = "source="+source+"&target="+target+"&text="+prevText;
 
-    manager->post(request, strequest.toStdString().c_str());
 
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply* )));
-    ui->TransText->setPlainText(transResult);
-
-    //connect(ui->TransText, SIGNAL(textChanged(transResult)), this, SLOT(changedText()));
+    emit finished(manager->post(request, strequest.toStdString().c_str()));
 }
 
-/*
-void Translate::changedText()
+void Translate::on_TransText_textChanged()
 {
-    qDebug()<<"Show";
     ui->TransText->show();
 }
-*/
+
